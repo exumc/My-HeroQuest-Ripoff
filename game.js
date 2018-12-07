@@ -1,12 +1,9 @@
+var inquirer = require("inquirer");
 function game() {
     var mainChar = "";
     var smallEnemy = new Character("Goblin", "Rogue", 2, 1, 1);
     var bigEnemy = new Character("Orc", "Fighter", 3, 2, 1);
     var bigBoss = new Character("Chaos Warrior", "Warrior", 4, 4, 3)
-
-    function randInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
 
     function Character(name, role, attack, defend, hp) {
         this.name = name;
@@ -15,8 +12,6 @@ function game() {
         this.defend = defend;
         this.hp = hp;
         alive = true;
-        this.hits = randInt(1, 3);
-        this.misses = randInt(1, 2);
         this.printStats = function () {
             console.log("\r\n\r\n");
             console.log("Name: " + this.name);
@@ -25,21 +20,32 @@ function game() {
             console.log("Defense: " + this.defense);
             console.log("HP: " + this.hp);
             console.log("\r\n\r\n");
+        };
+        this.isAlive = function() {
+            if (this.hp > 0) {
+              console.log(this.name + " is still alive!");
+              console.log("\n-------------\n");
+              return true;
+            }
+            console.log(this.name + " has died!");
+            return false;
+          };
+
+        this.dice = {
+            sides: 6,
+            roll: function() {
+                    var randomNumber = Math.floor(Math.random() * this.sides) + 1;
+                    return randomNumber;
+                }
         }
 
     }
 
     function fight(user, target) {
-        ct = user.attack;
-        if (ct < 1) {
-            return;
-        } else {
-            if (user.hits > target.misses) {
-                console.log("Target hit")
-            } else {
-                console.log("Target misses")
-            }
-        }
+        var userRoll = user.dice.roll();
+        var enemyRoll = target.dice.roll();
+        console.log(userRoll);
+        console.log(enemyRoll);
     }
 
     function chooseCharacter(inquirer) {
@@ -78,7 +84,7 @@ function game() {
         );
     }
 
-    var inquirer = require("inquirer");
+
 
     //start the game
     chooseCharacter(inquirer).then(function (res) {
