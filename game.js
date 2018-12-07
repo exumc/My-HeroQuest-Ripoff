@@ -5,21 +5,20 @@ function game() {
     var bigEnemy = new Character("Orc", "Fighter", 3, 2, 1);
     var bigBoss = new Character("Chaos Warrior", "Warrior", 4, 4, 3)
 
-    function Character(name, role, attack, defend, hp) {
+    function Character(name, role, attack, defense, hp) {
         this.name = name;
         this.role = role;
         this.attack = attack;
-        this.defend = defend;
+        this.defense = defense;
         this.hp = hp;
         alive = true;
         this.printStats = function () {
-            console.log("\r\n\r\n");
+            console.log("\r\n");
             console.log("Name: " + this.name);
             console.log("Class: " + this.role);
             console.log("Attack: " + this.attack);
             console.log("Defense: " + this.defense);
             console.log("HP: " + this.hp);
-            console.log("\r\n\r\n");
         };
         this.isAlive = function () {
             if (this.hp > 0) {
@@ -42,10 +41,37 @@ function game() {
     }
 
     function fight(user, target) {
-        var userRoll = user.dice.roll();
-        var enemyRoll = target.dice.roll();
-        console.log(userRoll);
-        console.log(enemyRoll);
+        var userHits = 0;
+        var targetHits = 0;
+        if (user.hp > 0){
+        for (var i = 0; i < user.attack; i++) {
+            var userRoll = user.dice.roll();
+            console.log(user.name + " rolled: " + userRoll);
+            console.log("==============");
+            if (userRoll === 1 || userRoll === 2 || userRoll === 3) {
+                userHits++;
+            }
+        }
+    }
+        if (target.hp > 0){
+            for (var j = 0; j < target.defense; j++) {
+            var enemyRoll = target.dice.roll();
+            console.log(target.name + " rolled: " + enemyRoll);
+            console.log("==============");
+            if (enemyRoll === 4 || enemyRoll === 5) {
+                targetHits++;
+            }
+        }
+    }
+
+        if (userHits > targetHits) {
+            target.hp -= userHits;
+            console.log("======================")
+            console.log(user.name + " hit " + target.name + " for " + userHits + " damage!")
+            console.log("======================")
+        } else {
+            console.log("The attack failed!")
+        }
     }
 
     function chooseCharacter(inquirer) {
@@ -58,20 +84,16 @@ function game() {
             }
         ]).then(function (iqRes) {
             if (iqRes.character === "Barbarian") {
-                mainChar = new Character("Alan", "Barbarian", "Male", 28, 18, 20, "Hunter", true);
-                secondChar = new Character("Cord", "Hunter", "Male", 30, 13, 15, "Barbarian", true);
+                mainChar = new Character("Alan", "Barbarian", 3, 2, 8);
                 console.log(mainChar.printStats());
-            } if (iqRes.character === "Warlock") {
-                mainChar = new Character("Emad", "Warlock", "Male", 42, 7, 16, "Priest", true);
-                secondChar = new Character("Leslie", "Priest", "Female", 25, 4, 12, "Warlock", true);
+            } if (iqRes.character === "Wizard") {
+                mainChar = new Character("Emad", "Wizard", 1, 2, 4);
                 console.log(mainChar.printStats());
-            } if (iqRes.character === "Priest") {
-                mainChar = new Character("Leslie", "Priest", "Female", 25, 4, 12, "Warlock", true);
-                secondChar = new Character("Emad", "Warlock", "Male", 42, 7, 16, "Priest", true);
+            } if (iqRes.character === "Elf") {
+                mainChar = new Character("Jake", "Elf", 2, 2, 6);
                 console.log(mainChar.printStats());
-            } if (iqRes.character === "Hunter") {
-                mainChar = new Character("Cord", "Hunter", "Male", 30, 13, 15, "Barbarian");
-                secondChar = new Character("Alan", "Barbarian", "Male", 28, 18, 20, "Hunter");
+            } if (iqRes.character === "Dwarf") {
+                mainChar = new Character("Cord", "Dwarf", 2, 2, 7);
                 console.log(mainChar.printStats());
             }
         })
@@ -91,37 +113,76 @@ function game() {
         ]).then(function (res) {
             if (res.action === "Run!") {
                 console.log("Don't be such a coward!");
-                fight(smallEnemy, mainChar);
             }
             if (res.action === "Fight!") {
-                fight(mainChar, smallEnemy);
-            } else {
-                return;
+                firstFight();
             }
+        })
+    }
+    function firstFight() {
+        if (smallEnemy.isAlive() === true && mainChar.isAlive() === true) {
+            fight(mainChar, smallEnemy);
+            fight(smallEnemy, mainChar);
         }
-        );
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "action",
+                message: "Now what do you want to do?",
+                choices: ["Attack!",]
+            }
+        ]).then(function (res2) {
+            if (res2.action === "Attack!") {
+                // characters deal damage to one another
+                fight(mainChar, smallEnemy);
+                fight(smallEnemy, mainChar);
+                // prints stats to show changes
+                mainChar.printStats();
+                smallEnemy.printStats();
+            }
+        });
+    }
+    function firstFight() {
+
+        function fighting() {
+            fight(mainChar, smallEnemy);
+            fight(smallEnemy, mainChar);
+            mainChar.printStats();
+            smallEnemy.printStats();
+        }
+
+        if (smallEnemy.isAlive() === true && mainChar.isAlive() === true) {
+            fighting();
+            inquirer.prompt([
+                {
+                    type: "list",
+                    name: "action",
+                    message: "Now what do you want to do?",
+                    choices: ["Attack!",]
+                }
+            ]).then(function (res2) {
+                if (res2.action === "Attack!") {
+                    fighting();
+                }
+            });
+            firstFight()
+        } else {
+            inquirer.prompt([
+                {
+                    type: "list",
+                    name: "action",
+                    message: "The Fight is over!",
+                    choices: ["Gloat", "Move on."]
+                }
+            ])
+        }
     }
 
 
 
     //start the game
     chooseCharacter(inquirer).then(function (res) {
-        if (res.character === "Barbarian") {
-            var mainChar = new Character("Alan", "Barbarian", 3, 2, 8);
-            console.log(mainChar.printStats());
-        } if (res.character === "Dwarf") {
-            var mainChar = new Character("Cord", "Dwarf", 2, 2, 7);
-            console.log(mainChar.printStats());
-        } if (res.character === "Elf") {
-            var mainChar = new Character("Emad", "Elf", 2, 2, 6);
-            console.log(mainChar.printStats());
-        } if (res.character === "Wizard") {
-            var mainChar = new Character("Jacob", "Wizard", 1, 2, 4);
-            console.log(mainChar.printStats());
-        };
         firstRoom();
-    });
-
+    })
 }
-
 game();
