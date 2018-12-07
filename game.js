@@ -90,7 +90,7 @@ function game() {
                 mainChar = new Character("Emad", "Wizard", 1, 2, 4);
                 console.log(mainChar.printStats());
             } if (iqRes.character === "Elf") {
-                mainChar = new Character("Jake", "Elf", 2, 2, 6);
+                mainChar = new Character("Leslie", "Elf", 2, 2, 6);
                 console.log(mainChar.printStats());
             } if (iqRes.character === "Dwarf") {
                 mainChar = new Character("Cord", "Dwarf", 2, 2, 7);
@@ -119,29 +119,7 @@ function game() {
             }
         })
     }
-    function firstFight() {
-        if (smallEnemy.isAlive() === true && mainChar.isAlive() === true) {
-            fight(mainChar, smallEnemy);
-            fight(smallEnemy, mainChar);
-        }
-        inquirer.prompt([
-            {
-                type: "list",
-                name: "action",
-                message: "Now what do you want to do?",
-                choices: ["Attack!",]
-            }
-        ]).then(function (res2) {
-            if (res2.action === "Attack!") {
-                // characters deal damage to one another
-                fight(mainChar, smallEnemy);
-                fight(smallEnemy, mainChar);
-                // prints stats to show changes
-                mainChar.printStats();
-                smallEnemy.printStats();
-            }
-        });
-    }
+
     function firstFight() {
 
         function fighting() {
@@ -149,10 +127,11 @@ function game() {
             fight(smallEnemy, mainChar);
             mainChar.printStats();
             smallEnemy.printStats();
+            smallEnemy.isAlive();
+            mainChar.isAlive();
         }
 
         if (smallEnemy.isAlive() === true && mainChar.isAlive() === true) {
-            fighting();
             inquirer.prompt([
                 {
                     type: "list",
@@ -165,7 +144,7 @@ function game() {
                     fighting();
                 }
             });
-            firstFight()
+            // firstFight()
         } else {
             inquirer.prompt([
                 {
