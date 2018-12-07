@@ -21,22 +21,22 @@ function game() {
             console.log("HP: " + this.hp);
             console.log("\r\n\r\n");
         };
-        this.isAlive = function() {
+        this.isAlive = function () {
             if (this.hp > 0) {
-              console.log(this.name + " is still alive!");
-              console.log("\n-------------\n");
-              return true;
+                console.log(this.name + " is still alive!");
+                console.log("\n-------------\n");
+                return true;
             }
             console.log(this.name + " has died!");
             return false;
-          };
+        };
 
         this.dice = {
             sides: 6,
-            roll: function() {
-                    var randomNumber = Math.floor(Math.random() * this.sides) + 1;
-                    return randomNumber;
-                }
+            roll: function () {
+                var randomNumber = Math.floor(Math.random() * this.sides) + 1;
+                return randomNumber;
+            }
         }
 
     }
@@ -56,7 +56,25 @@ function game() {
                 message: "Who are you?",
                 choices: ["Barbarian", "Dwarf", "Elf", "Wizard",]
             }
-        ])
+        ]).then(function (iqRes) {
+            if (iqRes.character === "Barbarian") {
+                mainChar = new Character("Alan", "Barbarian", "Male", 28, 18, 20, "Hunter", true);
+                secondChar = new Character("Cord", "Hunter", "Male", 30, 13, 15, "Barbarian", true);
+                console.log(mainChar.printStats());
+            } if (iqRes.character === "Warlock") {
+                mainChar = new Character("Emad", "Warlock", "Male", 42, 7, 16, "Priest", true);
+                secondChar = new Character("Leslie", "Priest", "Female", 25, 4, 12, "Warlock", true);
+                console.log(mainChar.printStats());
+            } if (iqRes.character === "Priest") {
+                mainChar = new Character("Leslie", "Priest", "Female", 25, 4, 12, "Warlock", true);
+                secondChar = new Character("Emad", "Warlock", "Male", 42, 7, 16, "Priest", true);
+                console.log(mainChar.printStats());
+            } if (iqRes.character === "Hunter") {
+                mainChar = new Character("Cord", "Hunter", "Male", 30, 13, 15, "Barbarian");
+                secondChar = new Character("Alan", "Barbarian", "Male", 28, 18, 20, "Hunter");
+                console.log(mainChar.printStats());
+            }
+        })
     }
 
     function firstRoom() {
