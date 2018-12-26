@@ -29,6 +29,12 @@ function game() {
             console.log(this.name + " has died!");
             return false;
         };
+        this.hit = function (userHits) {
+
+        }
+        this.defend = function (targetDefends) {
+
+        }
 
         this.dice = {
             sides: 6,
@@ -41,38 +47,89 @@ function game() {
     }
 
     function fight(user, target) {
-        var userHits = 0;
-        var targetHits = 0;
-        if (user.hp > 0){
-        for (var i = 0; i < user.attack; i++) {
-            var userRoll = user.dice.roll();
-            console.log(user.name + " rolled: " + userRoll);
-            console.log("==============");
-            if (userRoll === 1 || userRoll === 2 || userRoll === 3) {
-                userHits++;
+        var battle = 1;
+        userTurn = 1;
+        targetTurn = 0;
+        while (battle == 1) {
+            while (userTurn == 1) {
+                userHits = 0;
+                targetDefends = 0;
+
+                for (var i = 0; i < user.attack; i++) {
+                    userRoll = user.dice.roll();
+                    console.log(user.name + "rolled: " + userRoll);
+                    console.log("============");
+                    if (userRoll === 1 || userRoll === 2 || userRoll === 3) {
+                        userHits++;
+                    }
+                }
+
+                for (var j = 0; j < target.attack; j++) {
+                    userRoll = target.dice.roll();
+                    console.log(target.name + "rolled: " + userRoll);
+                    console.log("============");
+                    if (userRoll === 4 || userRoll === 5) {
+                        targetDefends++;
+                    }
+                }
+                console.log("User hit " + userHits + " times");
+
+                console.log("Target defend " + targetDefends + " attacks");
+                if (userHits > targetDefends) {
+                    totalDamage = userHits - targetDefends;
+                    target.hp -= totalDamage;
+                    console.log(user.name + " has dealt " + totalDamage + " to " + target.name)
+                }
+                userTurn = 0;
+                targetTurn = 1;
             }
-        }
-    }
-        if (target.hp > 0){
-            for (var j = 0; j < target.defense; j++) {
-            var enemyRoll = target.dice.roll();
-            console.log(target.name + " rolled: " + enemyRoll);
-            console.log("==============");
-            if (enemyRoll === 4 || enemyRoll === 5) {
-                targetHits++;
+
+            while (targetTurn == 1) {
+                userHits = 0;
+                targetDefends = 0;
+
+                for (var i = 0; i < user.attack; i++) {
+                    userRoll = user.dice.roll();
+                    console.log(user.name + "rolled: " + userRoll);
+                    console.log("============");
+                    if (userRoll === 1 || userRoll === 2 || userRoll === 3) {
+                        userHits++;
+                    }
+                }
+
+                for (var j = 0; j < target.attack; j++) {
+                    userRoll = target.dice.roll();
+                    console.log(target.name + "rolled: " + userRoll);
+                    console.log("============");
+                    if (userRoll === 4 || userRoll === 5) {
+                        targetDefends++;
+                    }
+                }
+                console.log("User hit " + userHits + " times");
+
+                console.log("Target defend " + targetDefends + " attacks");
+                if (userHits > targetDefends) {
+                    totalDamage = userHits - targetDefends;
+                    target.hp -= totalDamage;
+                    console.log(user.name + " has dealt " + totalDamage + " to " + target.name)
+                }
+                targetTurn = 0;
+                userTurn = 1;
+            }
+
+            if (user.hp < 1) {
+                console.log("The Player has died!");
+                battle = 0;
+            }
+            else if (target.hp < 1) {
+                console.log("The monster has died!");
+                battle = 0;
             }
         }
     }
 
-        if (userHits > targetHits) {
-            target.hp -= userHits;
-            console.log("======================")
-            console.log(user.name + " hit " + target.name + " for " + userHits + " damage!")
-            console.log("======================")
-        } else {
-            console.log("The attack failed!")
-        }
-    }
+
+
 
     function chooseCharacter(inquirer) {
         return inquirer.prompt([
@@ -115,48 +172,10 @@ function game() {
                 console.log("Don't be such a coward!");
             }
             if (res.action === "Fight!") {
-                firstFight();
+                fight(mainChar, smallEnemy)
             }
         })
     }
-
-    function firstFight() {
-
-        function fighting() {
-            fight(mainChar, smallEnemy);
-            fight(smallEnemy, mainChar);
-            mainChar.printStats();
-            smallEnemy.printStats();
-            smallEnemy.isAlive();
-            mainChar.isAlive();
-        }
-
-        if (smallEnemy.isAlive() === true && mainChar.isAlive() === true) {
-            inquirer.prompt([
-                {
-                    type: "list",
-                    name: "action",
-                    message: "Now what do you want to do?",
-                    choices: ["Attack!",]
-                }
-            ]).then(function (res2) {
-                if (res2.action === "Attack!") {
-                    fighting();
-                }
-            });
-            // firstFight()
-        } else {
-            inquirer.prompt([
-                {
-                    type: "list",
-                    name: "action",
-                    message: "The Fight is over!",
-                    choices: ["Gloat", "Move on."]
-                }
-            ])
-        }
-    }
-
 
 
     //start the game
